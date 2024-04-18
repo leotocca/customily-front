@@ -12,7 +12,7 @@ const router = createRouter({
     },
     {
       path: '/images',
-      name: 'page-detail',
+      name: 'images',
       component: PageDetail
     }
   ]

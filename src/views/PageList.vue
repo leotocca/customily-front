@@ -15,30 +15,42 @@
 
       <!-- PAGELIST -->
       <div class="w-full mt-5">
-        <div v-for="(page, index) in pages" :key="`page-${index}`">
+        <template v-if="filteredPages.length">
+          <div v-for="(page, index) in filteredPages" :key="`page-${index}`">
+            <div
+              class="border border-gray-400/60 rounded-md py-6 px-4 flex justify-between items-center my-2"
+            >
+              <p>{{ page.title }}</p>
+              <button
+                @click="handlePageSelection(page)"
+                class="text-center bg-blue-600 border border-blue-800 text-white hover:text-blue-600/80 hover:bg-white transition-all duration-200 w-64 py-2 rounded-md font-semibold"
+              >
+                Open
+              </button>
+            </div>
+          </div>
+        </template>
+        <template v-else>
           <div
             class="border border-gray-400/60 rounded-md py-6 px-4 flex justify-between items-center my-2"
           >
-            <p>{{ page.title }}</p>
-            <RouterLink
-              to="/images"
-              class="text-center bg-blue-600 border border-blue-800 text-white hover:text-blue-600/80 hover:bg-white transition-all duration-200 w-64 py-2 rounded-md font-semibold"
-            >
-              Open
-            </RouterLink>
+            No results for your search
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </main>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import AxiosInstance from '../services/axios.js'
-import { RouterLink } from 'vue-router'
 import type { Page } from '../types/index'
+import { imagesStore } from '../stores/images'
 
-const pages = ref<Page[]>()
+const router = useRouter()
+const store = imagesStore()
+const pages = ref<Page[]>([])
 const searchInput = ref<string>('')
 
 async function getPages() {
@@ -48,6 +60,21 @@ async function getPages() {
   } catch (e) {
     console.error(e)
   }
+}
+
+const filteredPages = computed(() => {
+  if (searchInput.value !== '') {
+    return pages.value?.filter((page) => {
+      return page.title.toLowerCase().includes(searchInput.value.toLowerCase())
+    })
+  } else {
+    return pages.value
+  }
+})
+
+function handlePageSelection(page: Page) {
+  store.setImages(page.images)
+  router.push({ name: 'images' })
 }
 
 onMounted(() => {

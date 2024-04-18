@@ -3,3 +3,5 @@ export type Page = {
   images: Array<{ X: number; Y: number }>
   // {"Title":"3 Overlapping Images","Images":[{"X":100,"Y":100},{"X":200,"Y":150},{"X":300,"Y":250}]}
 }
+
+export type Images = Array<{ X: number; Y: number }>
